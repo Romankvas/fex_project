@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FEX File Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+    <h2>FEX File Exchange</h2>
+
+    <div class="fileContainer">
+        <input type="file" id="file">
+        <button id="uploadBtn">Upload</button>
+    </div>
+
+    <p id="result"></p>
+
+    <div class="downloadCointainer">
+        <input type="text" id="pin" placeholder="Enter 6-digit PIN">
+        <button id="downloadBtn">Download</button>
+    </div>
+
+    <p id="totalFiles"></p>
+</div>
+
+<script src="./main.js"></script>
+</body>
+</html>
