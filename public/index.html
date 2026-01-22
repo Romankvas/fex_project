@@ -2,34 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>FEX File Upload</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <title>FEX File Exchange</title>
   <link rel="stylesheet" href="style.css">
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+  <div class="wrap">
+    <h2>FEX File Exchange</h2>
+    <div class="fileContainer">
+      <input type="file" id="file">
+      <button id="uploadBtn">Upload</button>
+    </div>
+    
+    <div id="result-area" style="display:none; text-align: center; margin-top: 20px;">
+        <p>Your PIN: <strong id="pin-display" style="font-size: 24px; color: #6c63ff;"></strong></p>
+        <div id="qrcode" style="display: flex; justify-content: center; margin: 10px 0;"></div>
+    </div>
 
-<div class="wrap">
-  <h2>FEX File Exchange</h2>
-
-  <div class="fileContainer">
-    <input type="file" id="file">
-    <button id="uploadBtn">Upload</button>
+    <div class="downloadCointainer">
+      <input type="text" id="pin" placeholder="Enter PIN">
+      <button id="downloadBtn">Download</button>
+    </div>
+    <p id="totalFiles"></p>
   </div>
 
-  <p id="result"></p>
-
-  <div class="downloadCointainer">
-    <input type="text" id="pin" placeholder="Enter 6-digit PIN">
-    <button id="downloadBtn">Download</button>
+  <div id="my-files-panel" class="mini-panel">
+    <h4>Latest Uploads</h4>
+    <div id="history"></div>
   </div>
 
-  <p id="totalFiles"></p>
-</div>
-
-<script src="main.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>

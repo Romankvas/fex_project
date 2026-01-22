@@ -1,11 +1,12 @@
+/* Базові налаштування */
 * {
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
   background: linear-gradient(135deg, #1e1e2f, #2a2a40);
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   display: flex;
   justify-content: center;
@@ -13,50 +14,168 @@ body {
   color: #fff;
 }
 
+/* Основний контейнер */
 .wrap {
-  width: 360px;
+  width: 100%;
+  max-width: 400px;
   background: #1c1c2b;
-  padding: 25px;
-  border-radius: 14px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 20px;
 }
 
 h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #6c63ff;
+  letter-spacing: 1px;
 }
 
+/* Поля вводу та кнопки */
 .fileContainer,
 .downloadCointainer {
   display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 input[type="file"],
 input[type="text"] {
-  flex: 1;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #3f3f5a;
+  background: #2a2a40;
+  color: white;
+  outline: none;
+  transition: border 0.3s;
+}
+
+input:focus {
+  border-color: #6c63ff;
 }
 
 button {
-  padding: 8px 14px;
+  padding: 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #6c63ff;
   color: white;
+  font-weight: bold;
   cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
 }
 
 button:hover {
   background: #584ee8;
 }
 
-#result,
+button:active {
+  transform: scale(0.98);
+}
+
+/* Результат (ПІН та QR) */
+#result-area {
+  background: rgba(108, 99, 255, 0.1);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px dashed #6c63ff;
+}
+
+#qrcode {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+#qrcode img {
+  display: block;
+}
+
 #totalFiles {
   text-align: center;
+  font-size: 14px;
+  color: #888;
   margin-top: 10px;
-  font-weight: bold;
+}
+
+/* ПРАВА ПАНЕЛЬ (Мої файли) */
+.mini-panel {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 220px;
+  background: #1c1c2b;
+  padding: 20px;
+  border-radius: 15px;
+  border-left: 4px solid #6c63ff;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.3);
+}
+
+.mini-panel h4 {
+  margin: 0 0 15px 0;
+  color: #6c63ff;
+  font-size: 16px;
+  text-align: center;
+}
+
+.history-item {
+  background: #2a2a40;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-item strong {
+  color: #00ffcc;
+}
+
+/* Адаптивність для мобілок */
+@media (max-width: 800px) {
+  .mini-panel {
+    position: static;
+    transform: none;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: none;
+  }
+  
+  body {
+    flex-direction: column;
+    height: auto;
+    padding: 20px 0;
+  }
+}
+
+/* СТИЛІ ДЛЯ АДМІНКИ (Таблиця) */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #3f3f5a;
+}
+
+th {
+  color: #6c63ff;
+}
+
+.timer {
+  color: #ffcc00;
+  font-family: monospace;
 }
