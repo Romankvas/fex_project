@@ -41,5 +41,5 @@ async function removeFile(id) {
 }
 
 checkLogin();
-// Оновлювати список кожну хвилину
+
 setInterval(loadFiles, 60000);
