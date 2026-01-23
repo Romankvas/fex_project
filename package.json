@@ -11,10 +11,12 @@
   "description": "",
   "dependencies": {
     "body-parser": "^2.2.2",
+    "cloudinary": "^1.41.3",
     "express": "^5.2.1",
     "fs": "^0.0.1-security",
     "mongoose": "^9.1.2",
     "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
     "path": "^0.12.7"
   }
 }
