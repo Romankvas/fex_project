@@ -1,4 +1,4 @@
-/* Базові налаштування */
+
 * {
   box-sizing: border-box;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -14,7 +14,7 @@ body {
   color: #fff;
 }
 
-/* Основний контейнер */
+
 .wrap {
   width: 100%;
   max-width: 400px;
@@ -34,7 +34,7 @@ h2 {
   letter-spacing: 1px;
 }
 
-/* Поля вводу та кнопки */
+
 .fileContainer,
 .downloadCointainer {
   display: flex;
@@ -78,7 +78,7 @@ button:active {
   transform: scale(0.98);
 }
 
-/* Результат (ПІН та QR) */
+
 #result-area {
   background: rgba(108, 99, 255, 0.1);
   padding: 15px;
@@ -105,7 +105,7 @@ button:active {
   margin-top: 10px;
 }
 
-/* ПРАВА ПАНЕЛЬ (Мої файли) */
+
 .mini-panel {
   position: fixed;
   right: 20px;
@@ -141,7 +141,7 @@ button:active {
   color: #00ffcc;
 }
 
-/* Адаптивність для мобілок */
+
 @media (max-width: 800px) {
   .mini-panel {
     position: static;
@@ -158,7 +158,7 @@ button:active {
   }
 }
 
-/* СТИЛІ ДЛЯ АДМІНКИ (Таблиця) */
+
 table {
   width: 100%;
   border-collapse: collapse;
