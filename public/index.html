@@ -33,6 +33,24 @@
     <div id="history"></div>
   </div>
 
+  <div id="easter-egg">
+    <img src="./Знімок екрана 2026-01-24 224506.png" alt="Secret">
+    <p>Використай код, щоб отримати 100 робуксів</p>
+  </div>
+  
+  <script>
+    document.addEventListener('mousemove', function(e) {
+      const egg = document.getElementById('easter-egg');
+      const dist = Math.hypot(window.innerWidth - e.clientX, window.innerHeight - e.clientY);
+      
+      if (dist < 250) {
+        egg.classList.add('visible');
+      } else {
+        egg.classList.remove('visible');
+      }
+    });
+  </script>
+
   <script src="main.js"></script>
 </body>
 </html>

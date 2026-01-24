@@ -179,3 +179,39 @@ th {
   color: #ffcc00;
   font-family: monospace;
 }
+/* Секретна пасхалка */
+#easter-egg {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    opacity: 0.04;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    pointer-events: none;
+    z-index: 9999;
+    transform: scale(0.7);
+}
+
+#easter-egg img {
+    width: 140px;
+    filter: grayscale(100%) contrast(1.2);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+#easter-egg p {
+    font-size: 11px;
+    color: #ffffff;
+    margin: 10px 0 0 0;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+/* Стан, коли ми знайшли пасхалку (керується через JS) */
+#easter-egg.visible {
+    opacity: 0.35;
+    transform: scale(1.1) rotate(-2deg);
+}
