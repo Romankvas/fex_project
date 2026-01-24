@@ -1,6 +1,5 @@
 let history = JSON.parse(localStorage.getItem('myFiles') || '[]');
 
-
 function updateHistoryUI() {
     const container = $('#history');
     container.empty();
@@ -23,31 +22,43 @@ function updateHistoryUI() {
     });
 }
 
-
 window.removeFromHistory = function(pin) {
     history = history.filter(f => f.pin != pin);
     localStorage.setItem('myFiles', JSON.stringify(history));
     updateHistoryUI();
 };
 
-
 $('#uploadBtn').click(function () {
     const fileInput = document.getElementById('file');
     if (!fileInput.files.length) return alert('Choose file');
 
+    const file = fileInput.files[0];
     const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
+    formData.append('file', file);
 
     const btn = $(this);
     btn.prop('disabled', true).text('Uploading...');
 
-    axios.post('/upload', formData)
+    // --- ЛОГІКА РОЗПОДІЛУ (НОВА) ---
+    const fileName = file.name.toLowerCase();
+    // Список розширень, які мають зникати при сні сервера (локальні)
+    const isArchive = fileName.endsWith('.zip') || 
+                      fileName.endsWith('.rar') || 
+                      fileName.endsWith('.7z') || 
+                      fileName.endsWith('.tar') ||
+                      fileName.endsWith('.gz');
+
+    // Якщо архів -> upload/local, якщо фото/відео -> upload/cloud
+    const uploadUrl = isArchive ? '/upload/local' : '/upload/cloud';
+    console.log(`Uploading ${fileName} to: ${uploadUrl}`);
+    // ---------------------------------
+
+    axios.post(uploadUrl, formData)
         .then(res => {
             const pin = res.data.pincode;
             $('#pin-display').text(pin);
             $('#result-area').show();
             
-         
             $('#qrcode').empty();
             new QRCode(document.getElementById("qrcode"), {
                 text: window.location.origin + "/download/" + pin,
@@ -55,7 +66,7 @@ $('#uploadBtn').click(function () {
                 height: 128
             });
 
-            history.unshift({ name: fileInput.files[0].name, pin: pin });
+            history.unshift({ name: file.name, pin: pin });
             if(history.length > 5) history.pop();
             localStorage.setItem('myFiles', JSON.stringify(history));
             
@@ -68,9 +79,10 @@ $('#uploadBtn').click(function () {
         })
         .finally(() => {
             btn.prop('disabled', false).text('Upload');
+            // Очищуємо інпут, щоб можна було завантажити ще раз той самий файл якщо треба
+            fileInput.value = ''; 
         });
 });
-
 
 $('#downloadBtn').click(function () {
     const pin = $('#pin').val();
@@ -78,11 +90,12 @@ $('#downloadBtn').click(function () {
     else alert('Enter PIN');
 });
 
-
 function loadStats() {
-    axios.get('/stats').then(res => $('#totalFiles').text('Files online: ' + res.data.totalFiles));
+    axios.get('/stats')
+        .then(res => $('#totalFiles').text('Files online: ' + res.data.totalFiles))
+        .catch(console.error);
 }
 
-
+// Ініціалізація при завантаженні
 loadStats();
 updateHistoryUI();
