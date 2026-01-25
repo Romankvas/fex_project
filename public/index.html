@@ -9,6 +9,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+
+  <div class="top-settings">
+      <div class="settings-trigger">⚙️</div>
+      <div class="settings-menu">
+          <button onclick="setTheme('light')">☀️ Light Mode</button>
+          <button onclick="setTheme('dark')">🌙 Dark Mode (Blue)</button>
+      </div>
+  </div>
+
   <div class="wrap">
     <h2>FEX File Exchange</h2>
     <div class="fileContainer">
@@ -16,39 +25,63 @@
       <button id="uploadBtn">Upload</button>
     </div>
     
-    <div id="result-area" style="display:none; text-align: center; margin-top: 20px;">
+    <div id="result-area" style="display:none;">
         <p>Your PIN: <strong id="pin-display" style="font-size: 24px; color: #6c63ff;"></strong></p>
-        <div id="qrcode" style="display: flex; justify-content: center; margin: 10px 0;"></div>
+        <div id="qrcode" style="display: flex; justify-content: center;"></div>
     </div>
 
     <div class="downloadCointainer">
       <input type="text" id="pin" placeholder="Enter PIN">
       <button id="downloadBtn">Download</button>
     </div>
-    <p id="totalFiles"></p>
+    <p id="totalFiles" style="text-align:center; font-size:12px; color:#666;"></p>
   </div>
 
   <div id="my-files-panel" class="mini-panel">
     <h4>Latest Uploads</h4>
+    
+    <div class="search-container" style="margin-bottom: 10px;">
+        <input type="text" id="history-search" class="search-input" 
+               style="padding: 5px 10px; font-size: 12px; padding-left: 10px;" 
+               placeholder="Find..." oninput="updateHistoryUI()">
+    </div>
+
     <div id="history"></div>
   </div>
 
+ <div id="easter-wrapper">
+  <p class="easter-text">
+    Використовуйте цей код на фото,<br>
+    щоб получити найкрутіший відеоматеріал у світі👇
+  </p>
+
   <div id="easter-egg">
     <img src="./Знімок екрана 2026-01-24 224506.png" alt="Secret">
-    <p>Використай код, щоб отримати 100 робуксів</p>
   </div>
+</div>
+
   
   <script>
+    // Теми і Пасхалка (те саме)
     document.addEventListener('mousemove', function(e) {
       const egg = document.getElementById('easter-egg');
       const dist = Math.hypot(window.innerWidth - e.clientX, window.innerHeight - e.clientY);
-      
-      if (dist < 250) {
-        egg.classList.add('visible');
-      } else {
-        egg.classList.remove('visible');
-      }
+      if (dist < 250) egg.classList.add('visible');
+      else egg.classList.remove('visible');
     });
+
+    function setTheme(theme) {
+        if (theme === 'light') {
+            document.body.classList.add('light-theme');
+            document.body.classList.remove('dark-theme');
+        } else {
+            document.body.classList.remove('light-theme');
+            document.body.classList.add('dark-theme');
+        }
+        localStorage.setItem('siteTheme', theme);
+    }
+    const savedTheme = localStorage.getItem('siteTheme');
+    if(savedTheme) setTheme(savedTheme);
   </script>
 
   <script src="main.js"></script>

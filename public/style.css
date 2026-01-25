@@ -1,217 +1,507 @@
-
+/* === ОСНОВНІ НАЛАШТУВАННЯ === */
 * {
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-  background: linear-gradient(135deg, #1e1e2f, #2a2a40);
-  min-height: 100vh;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
+    /* Стандартна (Темна/Синя) тема */
+    background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    transition: background 0.3s, color 0.3s;
 }
 
+/* === СВІТЛА ТЕМА (LIGHT MODE) === */
+body.light-theme {
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    color: #333;
+}
 
+body.light-theme .wrap, 
+body.light-theme .admin-container .file-card,
+body.light-theme .settings-menu {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    color: #333;
+}
+
+body.light-theme input, 
+body.light-theme select {
+    background: #f0f2f5;
+    color: #333;
+    border-color: #ccc;
+}
+
+body.light-theme .mini-panel {
+    background: #ffffff;
+    color: #333;
+    border-left: 4px solid #6c63ff;
+}
+
+body.light-theme .history-item {
+    background: #f0f2f5;
+    color: #333;
+}
+
+/* === ГОЛОВНИЙ КОНТЕЙНЕР === */
 .wrap {
-  width: 100%;
-  max-width: 400px;
-  background: #1c1c2b;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  margin: 20px;
+    width: 100%;
+    max-width: 400px;
+    background: #1c1c2b;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.admin-main {
+    max-width: 1100px !important; /* Розширили з 800 до 1100 */
+    width: 95%;
 }
 
 h2 {
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 25px;
-  color: #6c63ff;
-  letter-spacing: 1px;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #6c63ff;
+    letter-spacing: 1px;
 }
 
-
-.fileContainer,
-.downloadCointainer {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+/* === НАЛАШТУВАННЯ (З ПРАВА ЗВЕРХУ) === */
+.top-settings {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
 }
 
-input[type="file"],
-input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #3f3f5a;
-  background: #2a2a40;
-  color: white;
-  outline: none;
-  transition: border 0.3s;
+.settings-trigger {
+    cursor: pointer;
+    font-size: 24px;
+    padding: 10px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.2);
+    transition: 0.3s;
+    user-select: none;
+}
+body.light-theme .settings-trigger { background: rgba(255,255,255,0.5); }
+
+.settings-trigger:hover { transform: rotate(90deg); }
+
+.settings-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    width: 200px;
+    background: #1c1c2b;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+    flex-direction: column;
+    gap: 5px;
 }
 
-input:focus {
-  border-color: #6c63ff;
+.top-settings:hover .settings-menu {
+    display: flex;
 }
+
+.settings-menu button {
+    background: transparent;
+    border: 1px solid transparent;
+    text-align: left;
+    color: inherit;
+    font-size: 14px;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.settings-menu button:hover {
+    background: rgba(108, 99, 255, 0.2);
+    border-color: #6c63ff;
+}
+
+.logout-btn-new {
+    color: #ff4d4d !important;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 5px;
+}
+
+/* === ВКЛАДКИ (TABS) В АДМІНЦІ === */
+.admin-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid transparent;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 20px;
+    color: inherit;
+    cursor: pointer;
+}
+body.light-theme .tab-btn { background: rgba(0,0,0,0.05); }
+
+.tab-btn.active {
+    background: #6c63ff;
+    color: white;
+    box-shadow: 0 4px 10px rgba(108, 99, 255, 0.4);
+}
+
+/* === ПОШУК (SEARCH BAR) === */
+.search-container {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 15px 12px 40px; /* Місце під іконку */
+    font-size: 16px;
+}
+.light-theme .search-input {
+    background: rgba(255, 255, 255, 0.5);
+    color: #333;
+    border-color: #ccc;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+}
+
+/* === ФОРМИ ТА КНОПКИ === */
+.fileContainer, .downloadCointainer, .card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+input[type="file"], input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #3f3f5a;
+    background: #2a2a40;
+    color: white;
+    outline: none;
+    transition: border 0.3s;
+}
+
+input:focus, select:focus { border-color: #6c63ff; }
 
 button {
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: #6c63ff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.1s;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #6c63ff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
 }
 
-button:hover {
-  background: #584ee8;
-}
+button:hover { background: #584ee8; }
+button:active { transform: scale(0.98); }
 
-button:active {
-  transform: scale(0.98);
-}
-
-
+/* === РЕЗУЛЬТАТ === */
 #result-area {
-  background: rgba(108, 99, 255, 0.1);
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  border: 1px dashed #6c63ff;
+    background: rgba(108, 99, 255, 0.1);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px dashed #6c63ff;
+    text-align: center;
 }
 
 #qrcode {
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-  display: inline-block;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-block;
+    margin: 10px 0;
 }
 
-#qrcode img {
-  display: block;
-}
-
-#totalFiles {
-  text-align: center;
-  font-size: 14px;
-  color: #888;
-  margin-top: 10px;
-}
-
-
+/* === ІСТОРІЯ === */
 .mini-panel {
-  position: fixed;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 220px;
-  background: #1c1c2b;
-  padding: 20px;
-  border-radius: 15px;
-  border-left: 4px solid #6c63ff;
-  box-shadow: -10px 0 30px rgba(0,0,0,0.3);
-}
-
-.mini-panel h4 {
-  margin: 0 0 15px 0;
-  color: #6c63ff;
-  font-size: 16px;
-  text-align: center;
-}
-
-.history-item {
-  background: #2a2a40;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  font-size: 13px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.history-item strong {
-  color: #00ffcc;
-}
-
-
-@media (max-width: 800px) {
-  .mini-panel {
-    position: static;
-    transform: none;
-    width: 100%;
-    margin-top: 20px;
-    box-shadow: none;
-  }
-  
-  body {
-    flex-direction: column;
-    height: auto;
-    padding: 20px 0;
-  }
-}
-
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-th, td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #3f3f5a;
-}
-
-th {
-  color: #6c63ff;
-}
-
-.timer {
-  color: #ffcc00;
-  font-family: monospace;
-}
-/* Секретна пасхалка */
-#easter-egg {
     position: fixed;
-    bottom: 25px;
-    right: 25px;
-    opacity: 0.04;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 220px;
+    background: #1c1c2b;
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 4px solid #6c63ff;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.3);
+}
+.history-item {
+    background: #2a2a40;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.history-item strong { color: #00ffcc; }
+body.light-theme .history-item strong { color: #008f72; }
+
+/* === АДМІН-ПАНЕЛЬ === */
+.admin-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 80px 20px 20px 20px;
+}
+
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Було 180, стало 250 */
+    gap: 20px;
+    max-height: 75vh;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.file-card {
+    background: #2a2a40;
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid rgba(108, 99, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.file-name {
+    font-size: 13px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 65%;
+}
+.file-pin { color: #00ffcc; font-weight: bold; }
+body.light-theme .file-pin { color: #008f72; }
+
+/* === ТАЙМЕР === */
+.card-timer {
+    font-size: 12px;
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
     text-align: center;
-    pointer-events: none;
-    z-index: 9999;
-    transform: scale(0.7);
+    margin-bottom: 10px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.timer-normal { color: #ffcc00; }
+.timer-critical { color: #ff4d4d; }
+
+/* ЕФЕКТ FOREVER */
+.timer-infinite {
+    background: linear-gradient(135deg, #6c63ff, #aa00ff);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(170, 0, 255, 0.6);
+    text-shadow: 0 0 5px rgba(255,255,255,0.8);
+    border: none;
+    animation: pulse-glow 2s infinite alternate;
+}
+
+@keyframes pulse-glow {
+    from { box-shadow: 0 0 10px rgba(170, 0, 255, 0.4); }
+    to { box-shadow: 0 0 20px rgba(170, 0, 255, 0.8); }
+}
+
+/* === КОНТРОЛЕРИ ЧАСУ В КАРТЦІ === */
+.card-actions {
+    flex-direction: row;
+    margin-bottom: 0;
+    gap: 5px;
+}
+
+.time-control-group {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.time-input-num {
+    width: 65px !important; /* Тепер цифри влізуть нормально */
+    padding: 8px !important;
+    font-size: 14px;
+}
+
+.time-input-select {
+    flex-grow: 1;
+    padding: 8px !important;
+    font-size: 13px;
+    min-width: 100px; /* Щоб не було "брєдом" */
+}
+
+.del-small { 
+    background: #ff4d4d; 
+    width: 35px; 
+    padding: 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.no-files {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    border: 2px dashed #3f3f5a;
+    border-radius: 12px;
+    color: #666;
+}
+
+/* === ПАСХАЛКА === */
+#easter-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.easter-text {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 8px;
+  transition: transform 0.3s ease, color 0.3s;
+}
+
+#easter-egg {
+  opacity: 0;
+  transform: scale(0.6);
+  transition: all 0.4s ease;
+  pointer-events: none;
 }
 
 #easter-egg img {
-    width: 140px;
-    filter: grayscale(100%) contrast(1.2);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  width: 160px;
+  border-radius: 10px;
+  transition: transform 0.4s ease;
 }
 
-#easter-egg p {
+/* Навів на текст */
+#easter-wrapper:hover .easter-text {
+  transform: scale(1.1);
+  color: #6c63ff;
+}
+
+/* Навів на блок */
+#easter-wrapper:hover #easter-egg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Навів ПРЯМО на фото */
+#easter-wrapper:hover #easter-egg img:hover {
+  transform: scale(1.2);
+}
+
+.loader {
+    border: 2px solid #f3f3f3; border-top: 2px solid #6c63ff;
+    border-radius: 50%; width: 12px; height: 12px;
+    animation: spin 1s linear infinite; display: inline-block; margin-right: 5px;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+@media (max-width: 800px) {
+    .mini-panel { position: static; transform: none; width: 100%; margin-top: 20px; }
+    body { flex-direction: column; height: auto; padding: 20px 0; }
+    .top-settings { top: 10px; right: 10px; }
+}
+/* Компактна сітка адмінки */
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Менша ширина карток */
+    gap: 12px;
+    padding: 10px;
+    max-height: 70vh; /* Обмежуємо висоту, щоб не гортати всю сторінку */
+    overflow-y: auto; /* Внутрішня прокрутка */
+}
+
+/* Стилізація прокрутки */
+.file-grid::-webkit-scrollbar { width: 6px; }
+.file-grid::-webkit-scrollbar-thumb { background: #6c63ff; border-radius: 10px; }
+
+.file-card {
+    background: #2a2a40;
+    border-radius: 10px;
+    padding: 10px; /* Менші відступи */
+    border: 1px solid rgba(108, 99, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file-name {
+    font-size: 11px; /* Дрібніший шрифт */
+    max-width: 100%;
+}
+
+.card-timer {
+    font-size: 10px; /* Компактний таймер */
+    padding: 4px 8px;
+    margin-bottom: 5px;
+}
+
+/* Компактні контролери в ряд */
+.time-control-group {
+    display: flex;
+    gap: 3px;
+    width: 100%;
+}
+
+.time-input-num {
+    width: 35px !important;
+    padding: 4px !important;
     font-size: 11px;
-    color: #ffffff;
-    margin: 10px 0 0 0;
-    font-family: 'Segoe UI', sans-serif;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 }
 
-/* Стан, коли ми знайшли пасхалку (керується через JS) */
-#easter-egg.visible {
-    opacity: 0.35;
-    transform: scale(1.1) rotate(-2deg);
+.time-input-select {
+    padding: 4px !important;
+    font-size: 10px;
+}
+
+.card-actions button:not(.del-small) {
+    padding: 8px 15px;
+    background: #4CAF50;
+    font-weight: bold;
 }

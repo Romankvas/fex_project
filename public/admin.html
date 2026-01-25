@@ -2,27 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Panel</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
-<body>
+<body class="dark-theme"> 
 
-<div class="wrap">
-  <h2>🔐 Admin files</h2>
+<div class="top-settings">
+    <div class="settings-trigger">⚙️</div>
+    <div class="settings-menu">
+        <button onclick="setTheme('light')">☀️ Light Mode</button>
+        <button onclick="setTheme('dark')">🌙 Dark Mode (Blue)</button>
+        <hr style="width:100%; border:0; border-top:1px solid rgba(255,255,255,0.1);">
+        <button onclick="logout()" class="logout-btn-new">🚪 Exit Admin</button>
+    </div>
+</div>
 
-  <table width="100%">
-    <thead>
-      <tr>
-        <th>File</th>
-        <th>PIN</th>
-        <th>Expires</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="files"></tbody>
-  </table>
+<div class="admin-container">
+  <div class="wrap admin-main">
+    <div class="admin-header">
+      <h2>🔐 Admin Control</h2>
+    </div>
+
+    <div class="admin-tabs">
+        <button class="tab-btn active" onclick="filterTab('all', event)">All Files</button>
+        <button class="tab-btn" onclick="filterTab('image', event)">🖼 Photos</button>
+        <button class="tab-btn" onclick="filterTab('video', event)">🎬 Videos</button>
+        <button class="tab-btn" onclick="filterTab('archive', event)">📦 Archives</button>
+    </div>
+
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="admin-search" class="search-input" placeholder="Search by filename..." oninput="renderFiles()">
+    </div>
+
+    <div id="file-grid" class="file-grid">
+      </div>
+  </div>
 </div>
 
 <script src="admin.js"></script>
