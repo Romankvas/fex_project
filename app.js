@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -8,14 +10,16 @@ const multer = require('multer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const ADMIN_PASSWORD = "Xrik_246_"; 
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 // --- Cloudinary Config ---
 cloudinary.config({
-  cloud_name: 'dryiqneae', 
-  api_key: '232114764729271',
-  api_secret: 'Q0altd8yH8zTa-ZG9Zt0-HTtlJ4'
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET
 });
+
+
 
 const storageCloud = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -36,12 +40,18 @@ const storageLocal = multer.diskStorage({
 });
 const uploadLocal = multer({ storage: storageLocal });
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://admin:rGwnobufSh9IjtdJ@cluster0.6vpzrpx.mongodb.net/?appName=Cluster0')
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error(err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error(err));
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+function adminAuth(req, res, next) {
+  if (req.headers['x-admin'] !== ADMIN_PASSWORD) {
+    return res.sendStatus(403);
+  }
+  next();
+}
 
 app.get('/', (req, res) => res.redirect('/home'));
 app.get('/home', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
@@ -145,7 +155,7 @@ app.post('/admin/login', (req, res) => {
   else res.sendStatus(401);
 });
 
-app.get('/admin/files', async (req, res) => {
+app.get('/admin/files', adminAuth, async (req, res) => {
   const files = await File.find().sort({ createdAt: -1 });
   const filesData = files.map(f => ({
       id: f._id,
@@ -156,31 +166,37 @@ app.get('/admin/files', async (req, res) => {
   res.json(filesData);
 });
 
-// Новий роут для зміни часу (Дні/Години/Forever)
+// --- Оновлений роут у app.js ---
 app.put('/admin/files/:id/expiry', async (req, res) => {
-    const { num, unit } = req.body; 
-    const file = await File.findById(req.params.id);
-    
-    if (!file) return res.sendStatus(404);
+    try {
+        const { num, unit } = req.body; 
+        const file = await File.findById(req.params.id);
+        
+        if (!file) return res.sendStatus(404);
 
-    if (unit === 'forever') {
-        file.expiresAt = null; 
-    } else {
-        const amount = parseInt(num);
-        if (isNaN(amount)) return res.status(400).send("Invalid number");
+        if (unit === 'forever') {
+            file.expiresAt = null; 
+        } else {
+            const amount = parseInt(num);
+            if (isNaN(amount)) return res.status(400).send("Invalid number");
 
-        let msToAdd = 0;
-        if (unit === 'hours') msToAdd = amount * 60 * 60 * 1000;
-        if (unit === 'days') msToAdd = amount * 24 * 60 * 60 * 1000;
+            let msToAdd = 0;
+            if (unit === 'minutes') msToAdd = amount * 60 * 1000;
+            else if (unit === 'hours') msToAdd = amount * 60 * 60 * 1000;
+            else if (unit === 'days') msToAdd = amount * 24 * 60 * 60 * 1000;
 
-        file.expiresAt = new Date(Date.now() + msToAdd);
+            file.expiresAt = new Date(Date.now() + msToAdd);
+        }
+        
+        await file.save();
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
     }
-    
-    await file.save();
-    res.sendStatus(200);
 });
 
-app.delete('/admin/files/:id', async (req, res) => {
+app.delete('/admin/files/:id', adminAuth, async (req, res) => {
   const file = await File.findById(req.params.id);
   if (file) {
     if(!file.isLocal && file.cloudinary_id) await cloudinary.uploader.destroy(file.cloudinary_id);

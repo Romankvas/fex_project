@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^2.2.2",
     "cloudinary": "^1.41.3",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "fs": "^0.0.1-security",
     "mongoose": "^9.1.2",

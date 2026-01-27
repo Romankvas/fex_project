@@ -35,11 +35,19 @@ function getFileType(name) {
 
 async function loadFiles() {
     try {
-        const res = await axios.get('/admin/files');
+        const res = await axios.get('/admin/files', {
+            headers: {
+                'x-admin': localStorage.getItem('adminPass')
+            }
+        });
         allFiles = res.data;
         renderFiles();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+        console.error(err);
+        alert('Немає доступу до адмінки. Увійди ще раз.');
+    }
 }
+
 
 function filterTab(tab, event) {
     currentTab = tab;
@@ -47,82 +55,39 @@ function filterTab(tab, event) {
     if(event) event.target.classList.add('active');
     renderFiles();
 }
-
-function renderFiles() {
-    const grid = document.getElementById('file-grid');
-    const searchQuery = document.getElementById('admin-search') ? document.getElementById('admin-search').value.toLowerCase() : '';
-    
-    grid.innerHTML = '';
-    
-    const filtered = allFiles.filter(f => {
-        const matchesTab = currentTab === 'all' || getFileType(f.name) === currentTab;
-        const matchesSearch = f.name.toLowerCase().includes(searchQuery);
-        return matchesTab && matchesSearch;
-    });
-
-    if (filtered.length === 0) {
-        grid.innerHTML = `<div class="no-files"><p>Файлів не знайдено.</p></div>`;
-        return;
-    }
-
-    filtered.forEach(f => {
-        let timeDisplayHtml = '';
-        if (!f.expiresAt) {
-            timeDisplayHtml = `<div class="card-timer timer-infinite">∞ Forever</div>`;
-        } else {
-            const diff = new Date(f.expiresAt) - new Date();
-            if (diff <= 0) {
-                timeDisplayHtml = `<div class="card-timer timer-critical">Expired</div>`;
-            } else {
-                const totalMinutes = Math.floor(diff / 60000);
-                const h = Math.floor(totalMinutes / 60);
-                const m = totalMinutes % 60;
-                const d = Math.floor(h / 24);
-
-                let timeText = d > 0 ? `${d}d ${h % 24}h` : (h > 0 ? `${h}h ${m}m` : `${m}m`);
-                timeDisplayHtml = `<div class="card-timer timer-normal">⏳ ${timeText}</div>`;
-            }
-        }
-
-        const card = document.createElement('div');
-        card.className = 'file-card';
-        card.innerHTML = `
-            <div class="card-header" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-                <span class="file-name" title="${f.name}" style="font-size: 14px;">${f.name}</span>
-                <span class="file-pin" style="font-size: 15px; color: #00ffcc;">#${f.pincode}</span>
-            </div>
-            
-            ${timeDisplayHtml}
-            
-            <div class="card-actions" style="display: flex; gap: 8px; align-items: center; margin-top: 5px;">
-                <div class="time-control-group" style="display: flex; gap: 4px; flex-grow: 1;">
-                    <input type="number" id="num-${f.id}" class="time-input-num" placeholder="12">
-                    <select id="unit-${f.id}" class="time-input-select" onchange="checkForever('${f.id}')">
-                        <option value="hours">Hrs</option>
-                        <option value="days">Days</option>
-                        <option value="forever">∞ Inf</option>
-                    </select>
-                </div>
-                <button onclick="updateTime('${f.id}')" style="background: #4CAF50; border-radius: 8px;">OK</button>
-                <button class="del-small" onclick="removeFile('${f.id}')" style="background: rgba(255,77,77,0.2); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 5px 10px; border-radius: 8px;">🗑</button>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-}
-
 // Якщо вибрали "Forever", блокуємо поле цифр, щоб не плутати
 function checkForever(id) {
-    const unit = document.getElementById(`unit-${id}`).value;
+    const unitSelect = document.getElementById(`unit-${id}`);
     const numInput = document.getElementById(`num-${id}`);
-    if (unit === 'forever') {
+
+    if (unitSelect.value === 'forever') {
         numInput.disabled = true;
         numInput.value = '';
         numInput.placeholder = '∞';
     } else {
         numInput.disabled = false;
-        if(numInput.value === '') numInput.value = '12';
+        numInput.placeholder = '12';
     }
+}
+function addAdminLog(action) {
+    let logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
+    const time = new Date().toLocaleTimeString();
+    logs.unshift(`[${time}] ${action}`);
+    
+    // Тримаємо тільки останні 10 записів
+    if (logs.length > 10) logs.pop();
+    
+    localStorage.setItem('adminLogs', JSON.stringify(logs));
+    renderAdminLogs();
+}
+
+function renderAdminLogs() {
+    const container = document.getElementById('log-container');
+    const logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
+    
+    if (logs.length === 0) return;
+    
+    container.innerHTML = logs.map(log => `<div>${log}</div>`).join('');
 }
 function renderFiles() {
     const grid = document.getElementById('file-grid');
@@ -138,40 +103,37 @@ function renderFiles() {
 
     if (filtered.length === 0) {
         grid.innerHTML = `<div class="no-files"><p>No files found.</p></div>`;
+        updateSelectedCount(); // Оновити лічильник
         return;
     }
 
     filtered.forEach(f => {
         let timeDisplayHtml = '';
-        
+        const diff = f.expiresAt ? (new Date(f.expiresAt) - new Date()) : null;
+
         if (!f.expiresAt) {
-            // Ефект Forever з іконкою
-            timeDisplayHtml = `<div class="card-timer timer-infinite">∞ Forever</div>`;
+            timeDisplayHtml = `<div class="card-timer timer-infinite"><span class="status-dot status-active"></span> ∞ Forever</div>`;
+        } else if (diff <= 0) {
+            timeDisplayHtml = `<div class="card-timer timer-critical"><span class="status-dot status-expired"></span> Expired</div>`;
         } else {
-            const diff = new Date(f.expiresAt) - new Date();
-            if (diff <= 0) {
-                timeDisplayHtml = `<div class="card-timer timer-critical">Expired</div>`;
-            } else {
-                const totalMinutes = Math.floor(diff / 60000);
-                const h = Math.floor(totalMinutes / 60);
-                const m = totalMinutes % 60;
-                const d = Math.floor(h / 24);
-
-                let timeText = "";
-                if (d > 0) timeText = `${d}d ${h % 24}h`;
-                else if (h > 0) timeText = `${h}h ${m}m`;
-                else timeText = `${m}m`;
-
-                timeDisplayHtml = `<div class="card-timer timer-normal">⏳ ${timeText}</div>`;
-            }
+            const totalMinutes = Math.floor(diff / 60000);
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            const d = Math.floor(h / 24);
+            let timeText = d > 0 ? `${d}d ${h % 24}h` : (h > 0 ? `${h}h ${m}m` : `${m}m`);
+            const statusClass = totalMinutes < 60 ? 'status-warning' : 'status-active';
+            timeDisplayHtml = `<div class="card-timer timer-normal"><span class="status-dot ${statusClass}"></span> ⏳ ${timeText}</div>`;
         }
 
         const card = document.createElement('div');
         card.className = 'file-card';
         card.innerHTML = `
-            <div class="card-header" style="flex-direction: column; align-items: flex-start;">
-                <span class="file-name" title="${f.name}">${f.name}</span>
-                <span class="file-pin" style="font-size: 14px;">#${f.pincode}</span>
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                <input type="checkbox" class="file-checkbox" value="${f.id}" onchange="updateSelectedCount()" style="width: 18px; height: 18px; cursor: pointer; margin-top: 5px;">
+                <div class="card-header" style="flex-direction: column; align-items: flex-start; flex-grow: 1;">
+                    <span class="file-name" title="${f.name}">${f.name}</span>
+                    <span class="file-pin" onclick="copyToClipboard('${f.pincode}')" style="font-size: 14px; cursor: pointer;">#${f.pincode} 📋</span>
+                </div>
             </div>
             
             ${timeDisplayHtml}
@@ -179,6 +141,7 @@ function renderFiles() {
             <div class="time-control-group">
                 <input type="number" id="num-${f.id}" class="time-input-num" placeholder="12">
                 <select id="unit-${f.id}" class="time-input-select" onchange="checkForever('${f.id}')">
+                    <option value="minutes">Min</option>
                     <option value="hours">Hrs</option>
                     <option value="days">Days</option>
                     <option value="forever">∞ Inf</option>
@@ -190,33 +153,108 @@ function renderFiles() {
         `;
         grid.appendChild(card);
     });
+    updateSelectedCount();
 }
 async function updateTime(id) {
-    const num = document.getElementById(`num-${id}`).value;
-    const unit = document.getElementById(`unit-${id}`).value;
-    
-    // Перевірка на дурня
-    if (unit !== 'forever' && !num) return alert("Enter a number!");
+    const numInput = document.getElementById(`num-${id}`);
+    const unitSelect = document.getElementById(`unit-${id}`);
 
-    if(!confirm("Змінити час?")) return;
-    
-    await axios.put(`/admin/files/${id}/expiry`, { num, unit });
-    loadFiles();
+    const unit = unitSelect.value;
+    let num = numInput.value;
+
+    // Захист
+    if (unit !== 'forever' && (!num || num <= 0)) {
+        return alert("Enter hours or days!");
+    }
+
+    if (!confirm("Змінити час життя файлу?")) return;
+
+    // 🔥 КЛЮЧОВЕ:
+    // якщо forever — шлемо спец значення
+    const payload =
+        unit === 'forever'
+            ? { unit: 'forever' }
+            : { unit, num: Number(num) };
+
+    try {
+        await axios.put(`/admin/files/${id}/expiry`, payload);
+        loadFiles();
+        addAdminLog(`Updated time for file ID: ${id}`); // <--- ДОДАТИ ЦЕ
+    } catch (err) {
+        console.error(err);
+        alert("Error updating time");
+    }
 }
+
 
 async function removeFile(id) {
-    if(!confirm("Видалити?")) return;
-    await axios.delete('/admin/files/' + id);
+    if (!confirm("Видалити?")) return;
+
+    await axios.delete('/admin/files/' + id, {
+        headers: { 'x-admin': localStorage.getItem('adminPass') }
+    });
+
     loadFiles();
+    addAdminLog(`Deleted file ID: ${id}`); // <--- ДОДАТИ ЦЕ
 }
+
 
 function logout() {
     localStorage.removeItem('adminPass');
     location.reload();
 }
+function updateSelectedCount() {
+    const checked = document.querySelectorAll('.file-checkbox:checked');
+    const btn = document.getElementById('delete-selected-btn');
+    const countSpan = document.getElementById('selected-count');
+    
+    if (checked.length > 0) {
+        btn.style.display = 'block';
+        countSpan.innerText = checked.length;
+    } else {
+        btn.style.display = 'none';
+    }
+}
 
+async function removeSelectedFiles() {
+    const checked = document.querySelectorAll('.file-checkbox:checked');
+    if (!confirm(`Видалити обрані файли (${checked.length})?`)) return;
+
+    const ids = Array.from(checked).map(cb => cb.value);
+    
+    // Видаляємо по черзі (або можна переробити бекенд під масив, але поки так)
+    for (const id of ids) {
+        try {
+            await axios.delete('/admin/files/' + id, {
+                headers: { 'x-admin': localStorage.getItem('adminPass') }
+            });
+        } catch (e) { console.error("Error deleting " + id); }
+    }
+    
+  loadFiles();
+    addAdminLog(`Mass deleted ${ids.length} files`); // <--- ДОДАТИ ЦЕ
+}
+/* === ЗАМІНИТИ ВЕСЬ window.onload В НИЗУ admin.js === */
 window.onload = () => {
     checkLogin();
+    renderAdminLogs();
+    
+    // Відновлення теми
     const savedTheme = localStorage.getItem('siteTheme');
     if(savedTheme) setTheme(savedTheme);
+
+    // 🕒 АВТО-ОНОВЛЕННЯ: кожні 60 секунд (60000 мс) оновлюємо список
+    setInterval(() => {
+        if (localStorage.getItem('adminPass')) {
+            loadFiles(); // Перезавантажує дані з сервера
+        }
+    }, 60000);
 };
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        const x = document.getElementById("toast");
+        x.innerText = `PIN #${text} Copied!`;
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+    });
+}

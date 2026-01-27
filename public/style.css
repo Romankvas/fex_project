@@ -501,7 +501,60 @@ body.light-theme .file-pin { color: #008f72; }
 }
 
 .card-actions button:not(.del-small) {
-    padding: 8px 15px;
-    background: #4CAF50;
-    font-weight: bold;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+    min-width: 45px;
+}
+
+/* === TOAST NOTIFICATION (Спливаюче повідомлення) === */
+#toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 30px;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+#toast.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+@keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+/* Статуси в адмінці */
+.status-dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.status-active { background-color: #00ff88; box-shadow: 0 0 8px #00ff88; }
+.status-warning { background-color: #ffcc00; box-shadow: 0 0 8px #ffcc00; }
+.status-expired { background-color: #ff4d4d; box-shadow: 0 0 8px #ff4d4d; }
+
+.card-timer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#log-container div {
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+#log-container div:first-child {
+    color: #00ffcc; /* Останній лог буде підсвічений */
 }

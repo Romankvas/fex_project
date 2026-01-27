@@ -56,33 +56,46 @@
   </p>
 
   <div id="easter-egg">
-    <img src="./Знімок екрана 2026-01-25 225106.png" alt="Secret">
+    <img src="./Знімок екрана 2026-01-26 163907.png" alt="Secret">
   </div>
 </div>
 
   
-  <script>
-    // Теми і Пасхалка (те саме)
-    document.addEventListener('mousemove', function(e) {
-      const egg = document.getElementById('easter-egg');
-      const dist = Math.hypot(window.innerWidth - e.clientX, window.innerHeight - e.clientY);
-      if (dist < 250) egg.classList.add('visible');
-      else egg.classList.remove('visible');
-    });
-
-    function setTheme(theme) {
-        if (theme === 'light') {
-            document.body.classList.add('light-theme');
-            document.body.classList.remove('dark-theme');
-        } else {
-            document.body.classList.remove('light-theme');
-            document.body.classList.add('dark-theme');
-        }
-        localStorage.setItem('siteTheme', theme);
+<script>
+  function setTheme(theme) {
+    if (theme === 'light') {
+      document.body.classList.add('light-theme');
+      document.body.classList.remove('dark-theme');
+    } else {
+      document.body.classList.remove('light-theme');
+      document.body.classList.add('dark-theme');
     }
-    const savedTheme = localStorage.getItem('siteTheme');
-    if(savedTheme) setTheme(savedTheme);
-  </script>
+    localStorage.setItem('siteTheme', theme);
+  }
+
+  const savedTheme = localStorage.getItem('siteTheme');
+  if (savedTheme) setTheme(savedTheme);
+
+  // ✅ ПАСХАЛКА (копіювання коду)
+  const easterWrapper = document.getElementById('easter-wrapper');
+
+  if (easterWrapper) {
+    easterWrapper.addEventListener('click', () => {
+      const code = "111182";
+
+      navigator.clipboard.writeText(code).then(() => {
+        const text = document.querySelector('.easter-text');
+        const old = text.innerText;
+
+        text.innerText = "✅ Code copied!";
+        setTimeout(() => {
+          text.innerText = old;
+        }, 1500);
+      });
+    });
+  }
+</script>
+
 
   <script src="main.js"></script>
 </body>
