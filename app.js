@@ -7,8 +7,6 @@ const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
 
 const uploadDir = path.join(__dirname, 'local_uploads');
 
